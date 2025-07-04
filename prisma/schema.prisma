@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String
+  email String @unique
+  password String
+  todo String[] 
+  posts post[] @relation()
+  todolists todo[] @relation()
+  organizedevents events[] @relation()
+  }
+
+model post {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  title    String
+ userId String @db.ObjectId()
+ author User @relation(fields: [userId] ,references: [id])
+}
+model todo{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  heading String
+  description String 
+  userid String @db.ObjectId
+  authoroftodo User @relation(fields: [userid],references: [id])
+}
+model college{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  collegename String
+  place String
+  availabledepartments String[]
+  ranking Int 
+  event events[] @relation()
+}
+model events{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  eventname String
+  eventvenue String
+  eventdescription String
+  collegeid String @db.ObjectId
+  collegedetail college @relation(fields:[collegeid],references: [id])
+  evenorganizerid String @db.ObjectId
+  organizer User @relation(fields:[evenorganizerid],references: [id])
+}
